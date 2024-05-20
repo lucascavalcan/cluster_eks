@@ -2,7 +2,7 @@ resource "aws_internet_gateway" "eks_igw" {
   vpc_id = aws_vpc.eks_vpc.id
 
   tags = merge(
-    local.tags,
+    var.tags,
     {
       Name                              = "${var.project_name}-igw",
       "kubernetes.io/role/internal-elb" = 1
@@ -19,7 +19,7 @@ resource "aws_route_table" "eks_public_route_table" {
   }
 
   tags = merge(
-    local.tags,
+    var.tags,
     {
       Name                              = "${var.project_name}-public-route-table",
       "kubernetes.io/role/internal-elb" = 1
