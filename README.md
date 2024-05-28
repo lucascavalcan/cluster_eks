@@ -1,4 +1,4 @@
-# Terraform-eks-vpc
+# Cluster EKS
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
