@@ -4,9 +4,9 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.43.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | 2.12.1 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.27.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.49.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | 2.13.2 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.30.0 |
 
 ## Providers
 
