@@ -1,3 +1,3 @@
 locals {
-    oidc = split("/", var.oidc)[4]
+  oidc = split("/", var.oidc)[4]
 }

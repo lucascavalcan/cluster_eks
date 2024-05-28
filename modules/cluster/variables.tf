@@ -4,16 +4,16 @@ variable "project_name" {
 }
 
 variable "tags" {
-  type = map
+  type        = map(any)
   description = "tags to be add to AWS resources"
 }
 
 variable "public_subnet_1a" {
-  type = string
+  type        = string
   description = "subnet to create EKS cluster - AZ 1a"
 }
 
 variable "public_subnet_1b" {
-  type = string
+  type        = string
   description = "subnet to create EKS cluster - AZ 1b"
 }

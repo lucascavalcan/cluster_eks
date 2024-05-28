@@ -3,7 +3,7 @@ data "tls_certificate" "eks_oidc_tls_certificate" {
 }
 
 resource "aws_iam_openid_connect_provider" "eks_oidc" {
-  client_id_list  = [
+  client_id_list = [
     "sts.amazonaws.com"
   ]
   thumbprint_list = flatten([for cert in data.tls_certificate.eks_oidc_tls_certificate.certificates : cert.sha1_fingerprint])
