@@ -1,4 +1,4 @@
-name: Scan sandbox-github-actions with Trivy
+name: Scan and analyze with Trivy and SonarQube
 
 on:
   push:
