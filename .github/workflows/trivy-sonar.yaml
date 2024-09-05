@@ -1,4 +1,4 @@
-name: Scan and analyze with Trivy and SonarQube
+name: Scan and analyze with Trivy and Sonarqube
 
 on:
   push:
