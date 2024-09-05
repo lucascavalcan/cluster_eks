@@ -1,0 +1,6 @@
+ignorefile: .trivyignore
+
+scan:
+  skip-files:
+    - "**/*.yaml"
+    - "**/*.yml"
