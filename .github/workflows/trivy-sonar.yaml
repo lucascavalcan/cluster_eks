@@ -1,6 +1,5 @@
 name: Scan and Analyze with Trivy and SonarQube
 
-
 on:
   push:
     branches:
@@ -8,10 +7,6 @@ on:
   pull_request:
     branches:
       - main
-
-description: |
-  This GitHub Action scans code with Trivy and analyzes it with SonarQube.
-  It supports scanning for both push events on the main branch and pull requests.
 
 jobs:
   scan-and-analyze:
