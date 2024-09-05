@@ -47,5 +47,5 @@ jobs:
         if: always()
         uses: sonarsource/sonarqube-scan-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: "sqp_94edab6bd77552315a77aff5cf67686deb82652c"
+          SONAR_HOST_URL: "http://localhost:9000"
