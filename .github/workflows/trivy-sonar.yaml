@@ -90,8 +90,13 @@ jobs:
           name: sonar-report
           path: ./reports
 
+      - name: Check SonarQube Server
+        run: curl -I ${{ secrets.SONAR_HOST_URL }}
+
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@master
+        uses: sonarsource/sonarqube-scan-action@v1
+        with:
+          args: '-Dsonar.branch.name=main'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
