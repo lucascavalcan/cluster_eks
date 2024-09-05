@@ -1,5 +1,4 @@
-name: Scan and analyze with Trivy and Sonarqube
-
+name: Scan sandbox-github-actions with Trivy
 on:
   push:
     branches:
@@ -16,6 +15,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
       - name: Set up Trivy
         run: |
           sudo apt-get update
@@ -27,76 +36,16 @@ jobs:
 
       - name: Run Trivy scan
         run: |
-          trivy conf --ignorefile .trivyignore --format json -o trivy-infra-core.json .
-
-      - name: Upload Trivy report
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-report
-          path: trivy-infra-core.json
-
-  process-report:
-    runs-on: ubuntu-latest
-    needs: trivy-scan
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download Trivy report
-        uses: actions/download-artifact@v4
-        with:
-          name: trivy-report
-          path: .
-
-      - name: Create reports directory
-        run: mkdir -p reports
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
+          trivy conf --exit-code  1 --ignorefile .trivyignore --format json -o trivy-infra-core.json .
 
       - name: Run conversion script
+        if: always()
         run: |
           python trivy.py
 
-      - name: List files in reports directory
-        run: ls -la ./reports/
-
-      - name: Upload SonarQube report
-        uses: actions/upload-artifact@v4
-        with:
-          name: sonar-report
-          path: ./sonar_report.json
-
-  upload-to-sonarqube:
-    name: Build and analyze
-    runs-on: ubuntu-latest
-    needs: process-report
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download SonarQube report
-        uses: actions/download-artifact@v4
-        with:
-          name: sonar-report
-          path: ./
-
-      - name: Check SonarQube Server
-        run: curl -I ${{ secrets.SONAR_HOST_URL }}
-
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v1
-        with:
-          args: '-Dsonar.branch.name=main'
+        if: always()
+        uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
