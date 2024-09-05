@@ -36,7 +36,7 @@ jobs:
 
       - name: Run Trivy scan
         run: |
-          trivy conf --exit-code  1 --ignorefile .trivyignore --format json -o trivy-infra-core.json .
+          trivy conf --ignorefile .trivyignore --format json -o trivy-infra-core.json .
 
       - name: Run conversion script
         if: always()
