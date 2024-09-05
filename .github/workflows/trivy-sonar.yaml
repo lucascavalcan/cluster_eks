@@ -1,0 +1,90 @@
+name: Scan and Analyze with Trivy and SonarQube
+
+description: |
+  This GitHub Action scans code with Trivy and analyzes it with SonarQube.
+  It supports scanning for both push events on the main branch and pull requests.
+
+inputs:
+  node-version:
+    description: Node.js version to set up
+    default: "20"
+  python-version:
+    description: Python version to set up
+    default: "3.x"
+  trivy-version:
+    description: Trivy version to install
+    default: "0.54.1"
+
+outputs:
+  trivy-output:
+    description: Path to the Trivy scan output file
+    value: ${{ steps.trivy-scan.outputs.output-file }}
+  sonar-analysis-main:
+    description: Result of the SonarQube analysis for the main branch
+    value: ${{ steps.sonar-analysis-main.outputs.analysis-result }}
+  sonar-analysis-pr:
+    description: Result of the SonarQube analysis for pull requests
+    value: ${{ steps.sonar-analysis-pr.outputs.analysis-result }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Set up Trivy
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+        echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update
+        sudo apt-get install -y trivy=${{ inputs.trivy-version }}
+
+    - name: Run Trivy scan
+      shell: bash
+      id: trivy-scan
+      run: |
+        trivy conf --ignorefile .trivyignore --format json -o trivy-infra-core.json .
+        echo "output-file=trivy-infra-core.json" >> $GITHUB_ENV
+
+    - name: Run conversion script
+      shell: bash
+      if: always()
+      run: |
+        python trivy.py
+
+    - name: SonarQube Scan for Main Branch
+      if: always() && github.ref == 'refs/heads/main'
+      id: sonar-analysis-main
+      uses: sonarsource/sonarqube-scan-action@master
+      with:
+        args: >
+          -Dsonar.branch.name=main
+      env:
+        SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+
+    - name: SonarQube Scan for Pull Request
+      if: always() && github.event_name == 'pull_request'
+      id: sonar-analysis-pr
+      uses: sonarsource/sonarqube-scan-action@master
+      with:
+        args: >
+          -Dsonar.pullrequest.key=${{ github.event.number }}
+          -Dsonar.pullrequest.branch=${{ github.head_ref }}
+          -Dsonar.pullrequest.base=main
+      env:
+        SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
