@@ -1,5 +1,14 @@
 name: Scan and Analyze with Trivy and SonarQube
 
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 description: |
   This GitHub Action scans code with Trivy and analyzes it with SonarQube.
   It supports scanning for both push events on the main branch and pull requests.
@@ -73,8 +82,8 @@ runs:
         args: >
           -Dsonar.branch.name=main
       env:
-        SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
     - name: SonarQube Scan for Pull Request
       if: always() && github.event_name == 'pull_request'
@@ -86,5 +95,5 @@ runs:
           -Dsonar.pullrequest.branch=${{ github.head_ref }}
           -Dsonar.pullrequest.base=main
       env:
-        SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
